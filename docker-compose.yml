@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  php-apache:
+    container_name: "${CONTAINER_NAME_PREFIX}-apache-php"
+    build: .
+    volumes:
+      - ${PATH_TO_LARAVEL_PROJECT}:/var/www/html
+      - composer_cache:/root/.composer
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+
+  db:
+    container_name: "${CONTAINER_NAME_PREFIX}-mysql"
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_USER: ${MYSQL_DB_USER}
+      MYSQL_PASSWORD: ${MYSQL_DB_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+    # ports:
+    #   - "3307:3306" # My SQL defualt port is used in my host machine, so need to change it
+
+  adminer:
+    container_name: "${CONTAINER_NAME_PREFIX}-adminer"
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  db:
+  composer_cache:
