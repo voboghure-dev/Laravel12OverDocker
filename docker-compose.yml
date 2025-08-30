@@ -3,10 +3,15 @@ version: "3.9"
 services:
   php-apache:
     container_name: "${CONTAINER_NAME_PREFIX}-apache-php"
-    build: .
+    build:
+      context: .
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    user: "${UID}:${GID}"
     volumes:
       - ${PATH_TO_LARAVEL_PROJECT}:/var/www/html
-      - composer_cache:/root/.composer
+      - composer_cache:/home/dev/.composer
     ports:
       - "80:80"
     depends_on:
@@ -23,8 +28,9 @@ services:
       MYSQL_PASSWORD: ${MYSQL_DB_PASSWORD}
     volumes:
       - db:/var/lib/mysql
+    # Uncomment and change port if 3306 is used on host
     # ports:
-    #   - "3307:3306" # My SQL defualt port is used in my host machine, so need to change it
+    #   - "3307:3306"
 
   adminer:
     container_name: "${CONTAINER_NAME_PREFIX}-adminer"
